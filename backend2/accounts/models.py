@@ -12,8 +12,8 @@ class User(AbstractUser):
         MALE = "M", "남성"
         FEMALE = "F", "여성"
 
-    follower_set = models.ManyToManyField("self", blank=True)
-    following_set = models.ManyToManyField("self", blank=True)
+    follower_set = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="follower_set")
+    following_set = models.ManyToManyField("self", blank=True, related_name="following_set")
 
     website_url = models.URLField(blank=True)
     bio = models.TextField(blank=True)
