@@ -1,7 +1,5 @@
-from datetime import timedelta
 from django.db.models import Q
 from django.shortcuts import render
-from django.utils import timezone
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -27,13 +25,11 @@ class PostViewSet(ModelViewSet):
         return context
 
     def get_queryset(self):
-        # timesince = timezone.now() - timedelta(days=3)
         qs = super().get_queryset()
         qs = qs.filter(
             Q(author=self.request.user)
             | Q(author__in=self.request.user.following_set.all())
         )
-        # qs = qs.filter(created_at__gte=timesince)
         return qs
 
     def perform_create(self, serializer):

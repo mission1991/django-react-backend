@@ -1,9 +1,6 @@
-from django.conf import settings
 from django.contrib.auth.models import AbstractUser
-from django.core.mail import send_mail
 from django.core.validators import RegexValidator
 from django.db import models
-from django.template.loader import render_to_string
 from django.shortcuts import resolve_url
 
 
@@ -12,8 +9,10 @@ class User(AbstractUser):
         MALE = "M", "남성"
         FEMALE = "F", "여성"
 
-    follower_set = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="follower_set")
-    following_set = models.ManyToManyField("self", blank=True, related_name="following_set")
+    follower_set = models.ManyToManyField(
+        "self", blank=True, symmetrical=False, related_name="user_follower_set")
+    following_set = models.ManyToManyField(
+        "self", blank=True, symmetrical=False, related_name="user_following_set")
 
     website_url = models.URLField(blank=True)
     bio = models.TextField(blank=True)
@@ -39,13 +38,3 @@ class User(AbstractUser):
             return self.avatar.url
         else:
             return resolve_url("pydenticon_image", self.username)
-
-    def send_welcome_email(self):
-        subject = render_to_string(
-            "accounts/welcome_email_subject.txt", {"user": self,}
-        )
-        content = render_to_string(
-            "accounts/welcome_email_content.txt", {"user": self,}
-        )
-        sender_email = settings.WELCOME_EMAIL_SENDER
-        send_mail(subject, content, sender_email, [self.email], fail_silently=False)
